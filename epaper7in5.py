@@ -104,16 +104,13 @@ class EPD:
         self.cs(1)
 
     def init(self):
-        print("self inint")
         self.reset()
         self._command(POWER_SETTING, b'\x37\x00')
         self._command(PANEL_SETTING, b'\xCF\x08')
         self._command(BOOSTER_SOFT_START, b'\xC7\xCC\x28')
         self._command(POWER_ON)
-        print("hier gleich warten")
         
         self.wait_until_idle()
-        print ("der kommt nicht mehr ")
         self._command(PLL_CONTROL, b'\x3C')
         self._command(TEMPERATURE_CALIBRATION, b'\x00')
         self._command(VCOM_AND_DATA_INTERVAL_SETTING, b'\x77')
@@ -127,7 +124,6 @@ class EPD:
             sleep_ms(100)
 
     def reset(self):
-        print("reset" +str(self))
         self.rst(0)
         sleep_ms(200)
         self.rst(1)
@@ -136,9 +132,6 @@ class EPD:
     # draw the current frame memory
     def display_frame(self, frame_buffer):
         self._command(DATA_START_TRANSMISSION_1)
-        print (str(self.width))
-        print (str(self.height))
-        print (len(frame_buffer))
         for i in range(0,self.width * self.height // 8):
             # print (str(i))
             temp1 = frame_buffer[i]
