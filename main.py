@@ -4,9 +4,12 @@ import framebuf
 import network
 import urequests
 from time import sleep_ms
-from images import willkommen stop 
+from welcome import welcome
+from stop import stop
 
-REFRESH_INTERVAL_MS=1000
+
+REFRESH_INTERVAL_MS = 1000
+
 
 def do_connect():
     import network
@@ -17,7 +20,7 @@ def do_connect():
         wlan.connect('alpha', 'halima@2003')
         while not wlan.isconnected():
             pass
-    print("network config:", wlan.ifconfig())
+    print("network config :", wlan.ifconfig())
 
 
 def print_image(self, state):
@@ -44,20 +47,19 @@ def print_image(self, state):
     e.init()
 
     print("preparing frame buffer")
-    buf = bytearray(W * H // 8)
-    fb = framebuf.FrameBuffer(buf, W, H, framebuf.MONO_HLSB)
+    # buf = bytearray(W * H // 8)
+    # fb = framebuf.FrameBuffer(buf, W, H, framebuf.MONO_HLSB)
 
     if (state == "welcome"):
         print('Printing Willkommen')
-        bufImage = willkommen
-        e.display_frame(bufImage)
+        # bufImage = willkommen
+        e.display_frame(willkommen)
     elif(state == "stop"):
         print('Printing Stop')
-        bufImage = stop
-        e.display_frame(bufImage)
+        # bufImage = stop
+        e.display_frame(stop)
 
     print("Print abgeschlossen")
-
 
 do_connect()
 state = ""
