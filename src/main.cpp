@@ -7,17 +7,21 @@
 #include <epd7in5.h>
 #include <images.h>
 
+// stop 1
+// welcome 2
+
 const char *SSID = "alpha";
 const char *PASSWORD = "halima@2003";
 
 #define uS_TO_S_FACTOR                                                         \
-  1000000                 /* Conversion factor for micro seconds to seconds */
+  1000000 /* Conversion factor for micro seconds to seconds */
+// #define TIME_TO_SLEEP 60 /* Time ESP32 will go to sleep (in seconds) */
 #define TIME_TO_SLEEP 600 /* Time ESP32 will go to sleep (in seconds) */
 
 // the following two variables are stored in RTC memory so that they can survive
 // deep sleep
 RTC_DATA_ATTR int bootCount = 0;
-RTC_DATA_ATTR String lastResult = "";
+RTC_DATA_ATTR int lastResult = 0;
 
 #define LED_BUILTIN 2
 
@@ -32,8 +36,9 @@ void update() {
 
     if (httpCode > 0) { // Check for the returning code
       String payload = http.getString();
+      int payload_int = atoi(payload.c_str());
       Log.notice("Der payload lautet: %s" CR, payload.c_str());
-      if (payload != lastResult) {
+      if (payload_int != lastResult) {
         Log.notice("Payload hat sich geändert. Wir zeichnen das Bild neu" CR);
         Epd epd;
         if (epd.Init() != 0) {
@@ -41,17 +46,17 @@ void update() {
           return;
         }
 
-        if (payload == "welcome") {
+        if (payload_int == 2) {
           Log.notice("Printing Willkommen" CR);
           epd.DisplayFrame(WELCOME_IMAGE);
         }
 
-        else if (payload == "stop") {
+        else if (payload_int == 1) {
           Log.notice("Printing Stop" CR);
           epd.DisplayFrame(STOP_IMAGE);
         }
 
-        lastResult = payload;
+        lastResult = payload_int;
         Log.notice("Bild wurde aktualisiert" CR);
       } else {
         Log.notice(
@@ -79,13 +84,16 @@ void confirmUpdate() {
 }
 
 void setup() {
-  delay(4000);
+  delay(1000);
   Serial.begin(115200);
-  // Log.begin(LOG_LEVEL_VERBOSE, &Serial);
-  Log.begin(LOG_LEVEL_SILENT, &Serial);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB
+  }
+  Log.begin(LOG_LEVEL_VERBOSE, &Serial);
+  // Log.begin(LOG_LEVEL_SILENT, &Serial);
 
   Log.notice("Bootcounter: %d" CR, bootCount);
-  Log.notice("lastResult: %s" CR, lastResult.c_str());
+  Log.notice("lastResult: %d" CR, lastResult);
 
   bootCount++;
 
